@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "SoniPic",
+  "version": "1.0.0",
+  "description": "SoniPic",
+  "icons": {
+    "16": "icons/icon_sonipic.png",
+    "32": "icons/icon_sonipic.png",
+    "48": "icons/icon_sonipic.png",
+    "128": "icons/icon_sonipic.png"
+  },
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    { "matches": ["<all_urls>"], "js": ["content-script.js"] }
+  ],
+  "permissions": ["scripting", "activeTab", "tabs"],
+  "host_permissions": ["http://*/*", "https://*/*"]
+}
