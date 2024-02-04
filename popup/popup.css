@@ -1,0 +1,39 @@
+/* TODO : Import Accessible font */
+/*@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+*/
+
+
+#container {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+
+#container > button {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(-45deg, #E34246, #de787a);
+}
+
+#slider-images{
+  //*background: black;*/
+}
+
+.ct {
+  display: flex;
+  align-items: center;
+}
+
+.arrow-slider > img{
+  width: 35px;
+}
+
+#tabs{
+  display: flex;
+  padding-inline-start: 0 !important;
+}
+
+#tabs > button {
+height: 44px;
+width: 50px;
+}
