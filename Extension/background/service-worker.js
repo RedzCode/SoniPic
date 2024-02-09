@@ -48,5 +48,8 @@ function getImagesUrl() {
 }
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  sendResponse({ nb: imagesUrl.length });
+  if (request.action === "getNbImages") {
+    sendResponse({ nb: imagesUrl.length });
+  }
+  if (request.getURL != null) sendResponse({ url: imagesUrl[request.getURL] });
 });
