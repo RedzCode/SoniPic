@@ -22,8 +22,10 @@ document.addEventListener("DOMContentLoaded", function () {
         //console.log(response.url);
         let url = message.url.replaceAll('/', '.SN.')
         const resp = await fetch("http://127.0.0.1:5000/get-sound/"+url);
-        const sound = await resp.json();
-        console.log(sound);
+        const soundBase64 = await resp.json();
+        console.log(JSON.stringify(soundBase64));
+/*         var snd = new Audio("data:audio/x-wav;base64"+soundBase64);
+        snd.play(); */
         
       }
     );
