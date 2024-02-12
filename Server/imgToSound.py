@@ -7,10 +7,12 @@ import matplotlib.pyplot as plt
 from scipy.io.wavfile import write
 
 """
-Transforms pixel value into an amplitude betwenn [0,1]
+Transforms pixel value into an amplitude between [0,1]
 """
 def intensity_to_amplitude(value):
-    return value / 255.0 
+    # TODO : intensité non linéaire pour s'adapter à l'oreille humaine
+    return np.exp(0.02218*value - 5.6559) 
+    #return value / 255.0 
 
 """
 Generate a signal from an image in grayscale
@@ -18,15 +20,16 @@ Generate a signal from an image in grayscale
 def generate_sound(gray_image):
     
     print("(width, height) image = ",gray_image.shape)
-    width = gray_image.shape[1]
-    height = gray_image.shape[0]
+    width = gray_image.shape[1] #nb columns
+    height = gray_image.shape[0] #nb rows
     
     # Define the range of frequencies
-    min_frequency = 100  # Minimum frequency in Hz
-    max_frequency = 1000  # Maximum frequency in Hz
+    min_frequency = 500  # Minimum frequency in Hz
+    max_frequency = 1200  # Maximum frequency in Hz
     
+    #niquist :  sample_rate > 2 * maxFreq 
     # Sound parameters
-    sample_rate = 1000
+    sample_rate = 2100
     timeByColumns = 2
     duration = gray_image.shape[1] * timeByColumns # 2 sec by columns    
 
@@ -45,7 +48,7 @@ def generate_sound(gray_image):
         amp_envelope = np.zeros(len(t)) 
         
         # Determine frequence of a row
-        normalized_row_index = row_index / (width - 1)
+        normalized_row_index = row_index / (height - 1)
         frequency = min_frequency + (max_frequency - min_frequency) * normalized_row_index
 
         col_index = 0
@@ -96,14 +99,15 @@ def decode(path_image) :
     #cv.waitKey() 
 
     sounds = generate_sound(resized_gray_image)
+    
 
-    #plt.plot(sounds)
-    #plt.show()
+    plt.plot(sounds)
+    plt.show()
 
-    """ write('lineUp_10k.wav', 10000, sounds)
+    write('lineUp_10k.wav', 10000, sounds)
     write('lineUp_50k.wav', 50000, sounds)
     write('lineUp_100k.wav', 100000, sounds)
-    write('lineUp_1000k.wav', 1000000, sounds) """
+    write('lineUp_1000k.wav', 1000000, sounds)
 
 
-
+decode("images/line.png")
