@@ -14,6 +14,7 @@ Transforms pixel value into an amplitude between [0,1]
 """
 def intensity_to_amplitude(value):
     # TODO : intensité non linéaire pour s'adapter à l'oreille humaine
+    # TODO : check saturation 1
     return np.exp(0.02218*value - 5.6559) 
     #return value / 255.0 
 
@@ -27,14 +28,14 @@ def generate_sound(gray_image):
     height = gray_image.shape[0] #nb rows
     
     # Define the range of frequencies
-    min_frequency = 500  # Minimum frequency in Hz
-    max_frequency = 1200  # Maximum frequency in Hz
+    min_frequency = 50  # Minimum frequency in Hz #500 #100
+    max_frequency = 1200  # Maximum frequency in Hz #1200 #1000
     
     #niquist :  sample_rate > 2 * maxFreq 
     # Sound parameters
-    sample_rate = 2100
-    timeByColumns = 2
-    duration = gray_image.shape[1] * timeByColumns # 2 sec by columns    
+    sample_rate = 22050 # norme echantillonage
+    timeByColumns = 0.025
+    duration = int(gray_image.shape[1] * timeByColumns)     
 
     # Time array
     t = np.linspace(0, duration, duration * sample_rate)
@@ -53,6 +54,7 @@ def generate_sound(gray_image):
         # Determine frequence of a row
         normalized_row_index = row_index / (height - 1)
         frequency = min_frequency + (max_frequency - min_frequency) * normalized_row_index
+        frequency = max_frequency + (max_frequency - min_frequency) * (1 - normalized_row_index)
 
         col_index = 0
         for pixel_value in row:
@@ -61,8 +63,8 @@ def generate_sound(gray_image):
 
             # For each column associate 2000 points with the same amplitude
             # 2000 points =  2 secs
-            born_inf = col_index * (sample_rate*timeByColumns)
-            born_sup = (sample_rate*timeByColumns) * (col_index+1)
+            born_inf = int(col_index * (sample_rate*timeByColumns))
+            born_sup = int((sample_rate*timeByColumns) * (col_index+1))
             for j in range(born_inf, born_sup):
                 amp_envelope[j] = amplitude
         
@@ -75,7 +77,7 @@ def generate_sound(gray_image):
         sound += sinewave
 
     # Return the sum of signals
-    return sound
+    return sound/np.max(sound) * 0.95
 
 """
 Check if an argument is an URL
@@ -110,24 +112,21 @@ def decode(path_image) :
     resized_gray_image = cv.resize(gray_image, dim, interpolation = cv.INTER_AREA)
     
     # TODO : Edge detection
+    #edged_image = cv.Canny(resized_gray_image, threshold1=30, threshold2=100)
 
     #Affiche l'image
-    #cv.imshow("resized", resized_gray_image)
-    #cv.waitKey() 
+    cv.imshow("resized", resized_gray_image)
+    cv.waitKey() 
 
     sound = generate_sound(resized_gray_image)
     
     encodedSound = base64.b64encode(sound)
+
+    plt.plot(sound)
+    plt.show()
+
+    write('lineUp_sampleRate.wav', 22050, sound)
     
     return encodedSound
-    #plt.plot(sound)
-    #plt.show()
 
-    """ write('lineUp_10k.wav', 10000, sound)
-    write('lineUp_50k.wav', 50000, sound)
-    write('lineUp_100k.wav', 100000, sound)
-    write('lineUp_1000k.wav', 1000000, sound) """
-    
-    #return "decoded"
-
-#decode("images/line.png")
+decode("images/triangle.png")
