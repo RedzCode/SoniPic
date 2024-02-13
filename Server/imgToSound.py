@@ -1,10 +1,13 @@
+import re
 import cv2 as cv
 # for data transformation
 import numpy as np
 # for visualizing the data
 import matplotlib.pyplot as plt
-# for saving the media file
 from scipy.io.wavfile import write
+from urllib.parse import urlparse
+import urllib
+import base64
 
 """
 Transforms pixel value into an amplitude between [0,1]
@@ -75,17 +78,31 @@ def generate_sound(gray_image):
     return sound
 
 """
-Decode an image into a sound from left to right
+Check if an argument is an URL
+"""
+def isUrl(arg):
+    # Regular expression to match typical URL formats
+    url_pattern = re.compile(r'^(?:http|ftp)s?://\S+$', re.IGNORECASE)
 
+    # Check if the argument matches the URL pattern
+    if re.match(url_pattern, arg):
+        return True
+    return False
+
+"""
+Decode an image into a sound from left to right
+Parameter : path_image = URL or file path
 Return : the signal array
 """
-#"Server/line.png"
 def decode(path_image) :
     
-    """ check if image present
-    print(os.path.isfile("tree.jpg")) """
-    
-    gray_image = cv.imread(path_image,0) # GrayScale
+    if isUrl(path_image): 
+         req = urllib.request.urlopen(path_image)
+         arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
+         gray_image = cv.imdecode(arr, 0)
+    else : 
+        gray_image = cv.imread(path_image,0) # GrayScale
+        
     print("Gray image dim = ", gray_image.shape)
     
     # resize image
@@ -98,16 +115,19 @@ def decode(path_image) :
     #cv.imshow("resized", resized_gray_image)
     #cv.waitKey() 
 
-    sounds = generate_sound(resized_gray_image)
+    sound = generate_sound(resized_gray_image)
     
+    encodedSound = base64.b64encode(sound)
+    
+    return encodedSound
+    #plt.plot(sound)
+    #plt.show()
 
-    plt.plot(sounds)
-    plt.show()
+    """ write('lineUp_10k.wav', 10000, sound)
+    write('lineUp_50k.wav', 50000, sound)
+    write('lineUp_100k.wav', 100000, sound)
+    write('lineUp_1000k.wav', 1000000, sound) """
+    
+    #return "decoded"
 
-    write('lineUp_10k.wav', 10000, sounds)
-    write('lineUp_50k.wav', 50000, sounds)
-    write('lineUp_100k.wav', 100000, sounds)
-    write('lineUp_1000k.wav', 1000000, sounds)
-
-
-decode("images/line.png")
+#decode("images/line.png")

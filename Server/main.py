@@ -1,24 +1,30 @@
 import base64
+import json
 from flask import Flask, request, jsonify
 import cv2 as cv
-import os
-import urllib.request 
 from imgToSound import decode
 
 
 app = Flask(__name__)
 
-@app.route("/get-sound/<image_url>")
-def get_sound(image_url):
-    #url = image_url.replace(".SN.", "/")
-    # TODO : get image from body and not url
-    """ url = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Driebergen_Boom_Inhuldiging_Koning_Willem-Alexander.jpg/800px-Driebergen_Boom_Inhuldiging_Koning_Willem-Alexander.jpg"
-    urllib.request.urlretrieve(url, "Server/tree.jpg") 
-   """
+@app.route("/post-sound/", methods=['POST'])
+def post_sound():
    
-    decode("images/line.png")
+    # Extract the JSON data from the request body
+    data = request.json
+        
+    if data:
+        url = data.get('url')
+           
+    encodedSound = decode(url)
     
-    return jsonify("test") #jsonify(str(encoded))
+    data = {
+        "encodedSound": str(encodedSound)
+    }
+    
+    return jsonify(data)
+    
+    #return jsonify(encodedSound)
 
 
 if __name__ == "__main__":
