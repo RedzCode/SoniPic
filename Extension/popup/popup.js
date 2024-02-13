@@ -40,31 +40,34 @@ function addElementsSlider(nbElements) {
  
 }
 
-function getURL() {
+function getURL(indexImage) {
   chrome.runtime.sendMessage(
     //Send message to the background script
     {
-      getURL: 10,
+      getURL: indexImage,
     },
     async function (message) {
       //Get the answer of the background
-      //
-      //console.log(response.url);
-      let url = message.url.replaceAll('/', '.SN.')
+      console.log(message.url);
+      /*let url = message.url.replaceAll('/', '.SN.')
       const resp = await fetch("http://127.0.0.1:5000/get-sound/"+url);
       const soundBase64 = await resp.json();
-      console.log(JSON.stringify(soundBase64));
-/*         var snd = new Audio("data:audio/x-wav;base64"+soundBase64);
+      console.log(JSON.stringify(soundBase64));*/
+      /* var snd = new Audio("data:audio/x-wav;base64"+soundBase64);
       snd.play(); */
       
     }
   );
 }
 
-function handleActiveButton(element){
+function handleActiveButton(button){
   activeButton = document.getElementsByClassName("active")[0]
   activeButton.classList.remove("active")
 
-  element.classList.add("active")
+  button.classList.add("active")
+
+  index = button.getAttribute('data-idBtt')
+
+  getURL(index)
 }
 
