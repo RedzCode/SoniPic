@@ -8,55 +8,38 @@
     <script src="popup.js"></script>
     <script src="tabs.js" defer></script>
     <!-- TODO : defer-->
-
   </head>
 
   <body>
     <h1>SoniPic</h1>
-    <div id="slider-images">
-      <!--<div class="wrapper">
-        <div class="icon"><i id="left" class="fa-solid fa-angle-left"></i></div>
-        <ul class="tabs-box"> -->
-      <!-- button for accessibility access with tab-->
-      <!-- <button class="tab">Coding</button>
-          <button class="tab active">JavaScript</button>
-          <button class="tab">Podcasts</button>
-          <button class="tab">Databases</button>
-          <button class="tab">Web Development</button>
-          <button class="tab">Unboxing</button>
-          <button class="tab">History</button>
-          <button class="tab">Programming</button>
-          <button class="tab">Gadgets</button>
-          <button class="tab">Algorithms</button>
-          <button class="tab">Comedy</button>
-          <button class="tab">Gaming</button>
-          <button class="tab">Share Market</button>
-          <button class="tab">Smartphones</button>
-          <button class="tab">Data Structure</button>
-        </ul>
-        <div class="icon"><i id="right" class="fa-solid fa-angle-right"></i></div>
-      </div> -->
-      <div class="ct">
-        <button class="arrow-slider" style="background-color: white; margin: 0;"><img src="../images/arrow-left-fill.png" alt="arrow left slider images"/></button>
-        <ul class="" id="tabs">
-          <!-- button for accessibility access with tab-->
-          <button id="img-btt-0" class="active" style="background-color: black; color: white;">1</button>
-          <button class="">2</button>
-          <button class="">3</button>
-          <button class="">4</button>
-          <button class="">5</button>
-          <button class="">6</button>
-        </ul>
-        <button class="arrow-slider" style="background-color: white; margin: 0;">
-          <img src="../images/arrow-right-fill.png" alt="arrow right slider images"/>
-        </button>
+    <div class="ct">
+      <button
+        class="arrow-slider" id="sd-left"
+        style="background-color: white; margin: 0"
+      >
+        <img
+          src="../images/arrow-left-fill.png"
+          alt="arrow left slider images"
+        />
+      </button>
+      <div class="slider" id="slider">
+        <!-- button for accessibility access with tab-->
       </div>
-      <div id="container">
-        <button>Visualiser</button>
-        <button>Entendre</button>
-        <button>Enregistrer</button>
-        <button>Partager</button>
-      </div>
+      <button
+        class="arrow-slider" id ="sd-right"
+        style="background-color: white; margin: 0"
+      >
+        <img
+          src="../images/arrow-right-fill.png"
+          alt="arrow right slider images"
+        />
+      </button>
+    </div>
+    <div id="container">
+      <button>Visualiser</button>
+      <button>Entendre</button>
+      <button>Enregistrer</button>
+      <button>Partager</button>
     </div>
   </body>
 </html>
