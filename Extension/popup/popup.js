@@ -48,11 +48,23 @@ function getURL(indexImage) {
     },
     async function (message) {
       //Get the answer of the background
-      console.log(message.url);
-      /*let url = message.url.replaceAll('/', '.SN.')
-      const resp = await fetch("http://127.0.0.1:5000/get-sound/"+url);
-      const soundBase64 = await resp.json();
-      console.log(JSON.stringify(soundBase64));*/
+      fetch("http://127.0.0.1:5000/post-sound/", {
+        method: "POST",
+        body: JSON.stringify({
+          url: message.url
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8"
+        }
+      })
+      .then((response) => response.json())
+      .then((json) => encoded(json));
+      
+      function encoded(json){
+        console.log(json);
+        console.log(json.encodedSound);
+      
+      }
       /* var snd = new Audio("data:audio/x-wav;base64"+soundBase64);
       snd.play(); */
       
