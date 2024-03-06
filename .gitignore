@@ -8,3 +8,7 @@ htmlcov/
 docs/_build/
 dist/
 venv/
+Tests/
+node_modules/
+package-lock.json
+package.json
