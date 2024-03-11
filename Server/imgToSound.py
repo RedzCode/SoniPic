@@ -1,3 +1,4 @@
+import os
 import re
 import cv2 as cv
 # for data transformation
@@ -8,14 +9,56 @@ from scipy.io.wavfile import write
 from urllib.parse import urlparse
 import urllib
 import base64
+from scipy.signal import lfilter
 
 """
 Transforms pixel value into an amplitude between [0,1]
 """
 def intensity_to_amplitude(value):
     # TODO : intensité non linéaire pour s'adapter à l'oreille humaine
-    return np.exp(0.02218*value - 5.6559) 
-    #return value / 255.0 
+    #return np.exp(0.02218*value - 5.6559) 
+    return value / 255.0 
+
+def modulator(modulator, duration):
+    
+    # Parameters
+    fs = 22050
+    f_carrier = 635  # Carrier frequency in Hz (A4 note)
+
+    # Time array
+    t = np.arange(0, duration, 1/fs)
+
+    # Carrier and Modulator signals
+    carrier = np.sin(2 * np.pi * f_carrier * t)  # Carrier signal
+
+    # Amplitude Modulated signal
+    am_signal = carrier * modulator
+    
+    # Plotting
+    plt.figure(figsize=(10, 8))
+
+    # Carrier Signal
+    plt.subplot(3, 1, 1)
+    plt.plot(t, carrier)
+    plt.title('Carrier Signal')
+
+    # Modulator Signal
+    plt.subplot(3, 1, 2)
+    plt.plot(t, modulator)
+    plt.title('Modulator Signal')
+    
+    # AM Signal
+    plt.subplot(3, 1, 3)
+    plt.plot(t, am_signal)
+    plt.title('AM Signal')
+
+    plt.tight_layout()
+    plt.show()
+
+    # Saving the AM signal as a WAV file
+    am_signal_normalized = np.int16((am_signal / am_signal.max()) * 32767)  # Normalize the signal
+    
+    return am_signal_normalized
 
 """
 Generate a signal from an image in grayscale
@@ -71,11 +114,17 @@ def generate_sound(gray_image):
         
         # Generate signal of one row
         sinewave = amp_envelope * np.sin(2 * np.pi * frequency * t)
+        #sinewave = modulator(sinewave, duration)
         row_index += 1
         # Addition signals
         sound += sinewave
 
     # Return the sum of signals
+    # sound = sound[sound != 0]
+    n = 12  # the larger n is, the smoother curve will be
+    b = [1.0 / n] * n
+    a = 1
+    sound = lfilter(b, a, sound)
     return sound/np.max(sound) * 0.95
 
 """
@@ -95,7 +144,7 @@ Decode an image into a sound from left to right
 Parameter : path_image = URL or file path
 Return : the signal array
 """
-def decode(path_image) :
+def decodeVisualisation(path_image) :
     
     if isUrl(path_image): 
          req = urllib.request.urlopen(path_image)
@@ -114,21 +163,22 @@ def decode(path_image) :
     #edged_image = cv.Canny(resized_gray_image, threshold1=30, threshold2=100)
 
     #Display the image
-    cv.imshow("resized", resized_gray_image)
-    cv.waitKey() 
+    """cv.imshow("resized", resized_gray_image)
+    cv.waitKey() """
 
     sound = generate_sound(resized_gray_image)
+    #np.savetxt("sound.csv", sound, delimiter=",")
     
-    encodedSound = base64.b64encode(sound)
+    #encodedSound = base64.b64encode(sound)
 
     #Plot signal
-    plt.plot(sound)
+    """plt.plot(sound)
     plt.ylabel('Amplitude')
     plt.xlabel('Temps [sec]')
-    plt.show()
+    plt.show()"""
     
     #Plot spectrogramme
-    fig = plt.figure()
+    """fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.set_title("Spectrogramme")
     ax.set_xlabel("Temps [sec]")
@@ -136,10 +186,34 @@ def decode(path_image) :
     pxx,  freq, t, cax = plt.specgram(sound, Fs=22050, mode="magnitude")
     #fig.colorbar(cax).set_label('Intensité [dB]')
     plt.ylim([50, 1200])
-    plt.show()
-
-    #write('4-marguerite_70-1200.wav', 22050, sound)
+    plt.show()"""
     
-    return encodedSound
+    return sound
 
-decode("images/marguerite.jpg")
+    #write('line_modulated.wav', 22050, sound)
+    
+    #return encodedSound
+    
+def saveSound(sound,name):
+    name = name.rsplit('/', 1)[-1]
+    #MP3 less good quality but take less place compared to WAV
+    path = 'websitesSounds/'+name+'.wav'
+    write(path, 22050, sound)
+    
+    return path
+    
+def deleteSound(path):
+
+    print(path)
+    if os.path.exists(path):
+        os.remove(path)
+        return True
+    else:
+        print("The file does not exist") 
+    
+    return False
+
+url = "images/line.png"
+sound = decodeVisualisation(url)
+path = saveSound(sound, url)
+deleteSound(path)
