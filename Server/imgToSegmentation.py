@@ -1,23 +1,20 @@
+import librosa
+from scipy.io.wavfile import write
 from pathlib import Path
 import re
 from detectron2.utils.logger import setup_logger
 # Import some common libraries
 import numpy as np
 import cv2 as cv
-import random
 from detectron2 import model_zoo
 from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
-from detectron2.utils.visualizer import ColorMode, Visualizer
+from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
 import urllib
-from pydub import AudioSegment
 import librosa
 from scipy.io.wavfile import write
 
-AudioSegment.converter = "C:\\ffmpeg\\ffmpeg\\bin\\ffmpeg.exe"
-AudioSegment.ffmpeg = "C:\\ffmpeg\\ffmpeg\\bin\\ffmpeg.exe"
-AudioSegment.ffprobe ="C:\\ffmpeg\\ffmpeg\\bin\\ffprobe.exe"
 
 """
 Check if an argument is an URL
@@ -68,7 +65,7 @@ def segmentationDetection(path_image):
     # get thing classes
     for segment in segmentInfo:
         if segment["category_id"] >= 0:
-            if segment["isthing"] == True and segment["score"] > 0.8 :
+            if segment["isthing"] == True and segment["score"] > 0.9 :
                 segment_id_to_label.append(thing_classes[segment["category_id"]])
 
     # get stuff classes
@@ -91,37 +88,57 @@ def labelsToSound(labels):
     
     labels = list(dict.fromkeys(labels))
     
-    output = AudioSegment.empty
+    size = 220000
+    sound = np.zeros(size,)
+
     # Loop over all the labels
     for label in labels : 
-        sound = AudioSegment.empty
         if label == "person":
-            file_path = Path("sounds/person.mp3")
-            absolute_path = file_path.absolute()
-            print(absolute_path)
-            sound = AudioSegment.from_file(absolute_path, format="mp3")
+            person, sr = librosa.load('sounds/person_10sec.mp3')
+            person = person[0:size]
+            sound += person
             print("add person")
         elif label == "car":
-            file_path = Path("sounds/car.mp3")
-            absolute_path = file_path.absolute()
-            print(absolute_path)
-            sound = AudioSegment.from_file(absolute_path, format="mp3")
+            car, sr = librosa.load('sounds/car_10sec.mp3')
+            car = car[0:size]
+            sound += car
             print("add car")
         elif label == "bicycle":
             print("bicy")
         elif label == "sea":
             print("sea")
-        # mix sounds with sound1, starting at 5000ms into sound1)
-        output = sound.overlay(output)
+        elif label == "tree":
+            print("tree")
+        elif label == "sea":
+            print("sea")
+        elif label == "horse":
+            print("horse")
         
     # save
-    output.export("mixed_sounds.mp3", format="mp3")
-
-    
+    write("generatedSounds/mix.wav", sr, sound)
 
 def decodeRegion(path_image):
 
     labels = segmentationDetection(path_image)
     sound = labelsToSound(labels)
 
-decodeRegion("images/Street.jpg")
+decodeRegion("images/street.jpg")
+
+"""
+
+    #ipd.Audio(data=car, rate = sr)
+
+    print(car.shape)
+    print(person.shape)
+
+    size = min(car.shape, person.shape)[0]
+
+    car = car[0:size]
+    person = person[0:size]
+
+    print(car.shape)
+    print(person.shape)
+
+
+    mix = car + person
+"""
