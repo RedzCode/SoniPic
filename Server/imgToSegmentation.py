@@ -1,9 +1,6 @@
 import librosa
-from scipy.io.wavfile import write
-from pathlib import Path
 import re
 from detectron2.utils.logger import setup_logger
-# Import some common libraries
 import numpy as np
 import cv2 as cv
 from detectron2 import model_zoo
@@ -13,27 +10,14 @@ from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
 import urllib
 import librosa
-from scipy.io.wavfile import write
-
-
-"""
-Check if an argument is an URL
-"""
-def isUrl(arg):
-    # Regular expression to match typical URL formats
-    url_pattern = re.compile(r'^(?:http|ftp)s?://\S+$', re.IGNORECASE)
-
-    # Check if the argument matches the URL pattern
-    if re.match(url_pattern, arg):
-        return True
-    return False
+from utils import isUrl
 
 def segmentationDetection(path_image): 
         
     if isUrl(path_image): 
          req = urllib.request.urlopen(path_image)
          arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
-         image = cv.imdecode(arr)
+         image = cv.imdecode(arr, 1)
     else : 
         image = cv.imread(path_image)
 
@@ -79,8 +63,9 @@ def segmentationDetection(path_image):
     for i in range(len(segment_id_to_label)):
           print(f"Label: {segment_id_to_label[i]}")
     
-    cv.imshow("result", out.get_image()[:, :, ::-1])
-    cv.waitKey(0)
+    # Show image and labels
+    """cv.imshow("result", out.get_image()[:, :, ::-1])
+    cv.waitKey(0)"""
     
     return segment_id_to_label
     
@@ -90,6 +75,7 @@ def labelsToSound(labels):
     
     size = 220000
     sound = np.zeros(size,)
+    sr = 0
 
     # Loop over all the labels
     for label in labels : 
@@ -113,32 +99,18 @@ def labelsToSound(labels):
             print("sea")
         elif label == "horse":
             print("horse")
-        
-    # save
-    write("generatedSounds/mix.wav", sr, sound)
+           
+    if not np.any(sound) :
+        sound, sr = librosa.load('sounds/no_instances.mp3')
+    
+    return sound, sr
 
 def decodeRegion(path_image):
 
     labels = segmentationDetection(path_image)
-    sound = labelsToSound(labels)
+    sound,sr = labelsToSound(labels)
+    
+    return sound, sr
+    
 
-decodeRegion("images/street.jpg")
-
-"""
-
-    #ipd.Audio(data=car, rate = sr)
-
-    print(car.shape)
-    print(person.shape)
-
-    size = min(car.shape, person.shape)[0]
-
-    car = car[0:size]
-    person = person[0:size]
-
-    print(car.shape)
-    print(person.shape)
-
-
-    mix = car + person
-"""
+#decodeRegion("images/220px-Cycling_Amsterdan_04.jpg")
