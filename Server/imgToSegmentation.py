@@ -78,16 +78,18 @@ def labelsToSound(labels):
     size = 220000
     sound = np.zeros(size,)
     sr = 0
+    
+    racine = env.racine
 
     # Loop over all the labels
     for label in labels : 
         if label == "person":
-            person, sr = librosa.load('sounds/person_10sec.mp3')
+            person, sr = librosa.load(racine+'/sounds/person_10sec.mp3')
             person = person[0:size]
             sound += person
             print("add person")
         elif label == "car":
-            car, sr = librosa.load('sounds/car_10sec.mp3')
+            car, sr = librosa.load(racine+'/sounds/car_10sec.mp3')
             car = car[0:size]
             sound += car
             print("add car")
@@ -103,7 +105,7 @@ def labelsToSound(labels):
             print("horse")
            
     if not np.any(sound) :
-        sound, sr = librosa.load('sounds/no_instances.mp3')
+        sound, sr = librosa.load(racine+'/sounds/no_instances.mp3')
     
     return sound, sr
 
