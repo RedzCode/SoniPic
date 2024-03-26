@@ -1,12 +1,16 @@
-import base64
-import json
 import os
-from flask import Flask, request, jsonify, send_file
-import cv2 as cv
-from imgToSound import decodeVisualisation, saveSound, deleteSound
+import re
+from flask import Flask, Response, request, jsonify, send_file
+from imgToSound import decodeVisualisation
+from imgToSegmentation import decodeRegion
+from utils import saveSound, deleteSound, isPresent
+import pathlib
 
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route("/post-sound/", methods=['POST'])
 def post_sound():
@@ -16,38 +20,43 @@ def post_sound():
         
     if data:
         url = data.get('url')
-           
-    sound = decodeVisualisation(url)
-    path = saveSound(sound, url)
-    #deleteSound(path)
+        print("urlllll =========== " +url)
+        
+        url_modified = re.sub(r'[^\x00-\x7F]', '', url.rsplit('/', 1)[-1])
+        
+        # Visualisation
+        pathVisu = str("visu"+"_"+url_modified+'.wav')
+        if not isPresent(pathVisu) :
+            # Visualisation   
+            soundVisu,sr = decodeVisualisation(url)
+            saveSound(soundVisu, url,sr, "visu")
+            
+        # Listen
+        pathListen = str("ln"+"_"+url_modified+'.wav')
+        if not isPresent(pathListen) :
+            soundListen, sr = decodeRegion(url)
+            saveSound(soundListen,url, sr, "ln" )
+                
+        data = {
+            "pathVisu": str(pathVisu),
+            "pathListen": str(pathListen)
+        }
     
-    data = {
-        "path": str(path)
-    }
+        return jsonify(data)
     
-    return jsonify(data)
+    return Response("", status=404, mimetype='application/json')
     
-    """data = {
-        "encodedSound": str(encodedSound)
-    }
-    
-    return jsonify(data)"""
-    
-    #return jsonify(encodedSound)
-    
-    
-@app.route("/websitesSounds/<string:name>", methods=['GET'])
+@app.route("/get-sound/<string:name>", methods=['GET'])
+@cross_origin()
 def get_sound(name):
+    name = re.sub(r'[^\x00-\x7F]', '', name)
     racine = os.path.abspath(os.getcwd())
-    return send_file(racine+"/websitesSounds/"+name,as_attachment=True)
+    path = pathlib.PureWindowsPath(racine+"\\generatedSounds\\"+name)
+    return send_file(path.as_posix())
 
-@app.route("/websitesSounds/<string:path>", methods=['DELETE'])
-def delete_sound(path):
-    racine = os.path.abspath(os.getcwd())
-    #TODO : HANDLE error SEND HTTP 200 ou ...
-    return jsonify(deleteSound(racine+'/websitesSounds/'+path))
-    
-
+@app.route("/delete-sound/<string:path>", methods=['DELETE'])
+def delete_sound(name):
+    return jsonify(deleteSound(name))
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,22 +1,15 @@
-import os
 import re
 import cv2 as cv
-# for data transformation
 import numpy as np
-# for visualizing the data
 import matplotlib.pyplot as plt
-from scipy.io.wavfile import write
-from urllib.parse import urlparse
 import urllib
-import base64
 from scipy.signal import lfilter
+from utils import isUrl
 
 """
 Transforms pixel value into an amplitude between [0,1]
 """
 def intensity_to_amplitude(value):
-    # TODO : intensité non linéaire pour s'adapter à l'oreille humaine
-    #return np.exp(0.02218*value - 5.6559) 
     return value / 255.0 
 
 def modulator(modulator, duration):
@@ -83,7 +76,6 @@ def generate_sound(gray_image):
     t = np.linspace(0, duration, duration * sample_rate)
 
     # init a sound with zero amplitude
-    # TODO : find a way to init properly ?
     sound = 0 * np.sin(2 * np.pi * 0 * t)
 
     # Iterate over each pixel in the grayscale image
@@ -121,23 +113,11 @@ def generate_sound(gray_image):
 
     # Return the sum of signals
     # sound = sound[sound != 0]
-    n = 12  # the larger n is, the smoother curve will be
-    b = [1.0 / n] * n
-    a = 1
-    sound = lfilter(b, a, sound)
+    #n = 12  # the larger n is, the smoother curve will be
+    #b = [1.0 / n] * n
+    #a = 1
+    #sound = lfilter(b, a, sound)
     return sound/np.max(sound) * 0.95
-
-"""
-Check if an argument is an URL
-"""
-def isUrl(arg):
-    # Regular expression to match typical URL formats
-    url_pattern = re.compile(r'^(?:http|ftp)s?://\S+$', re.IGNORECASE)
-
-    # Check if the argument matches the URL pattern
-    if re.match(url_pattern, arg):
-        return True
-    return False
 
 """
 Decode an image into a sound from left to right
@@ -145,6 +125,9 @@ Parameter : path_image = URL or file path
 Return : the signal array
 """
 def decodeVisualisation(path_image) :
+    
+    print("==================================")
+    print(path_image)
     
     if isUrl(path_image): 
          req = urllib.request.urlopen(path_image)
@@ -156,20 +139,14 @@ def decodeVisualisation(path_image) :
     print("Gray image dim = ", gray_image.shape)
     
     # resize image
-    dim = (min(gray_image.shape[0], 400), min(gray_image.shape[1], 400))
+    dim = (min(max(gray_image.shape[0], 40), 400), min(max(gray_image.shape[1],40), 400))
     resized_gray_image = cv.resize(gray_image, dim, interpolation = cv.INTER_AREA)
-    
-    # TODO : Contour detection
-    #edged_image = cv.Canny(resized_gray_image, threshold1=30, threshold2=100)
 
     #Display the image
     """cv.imshow("resized", resized_gray_image)
     cv.waitKey() """
 
     sound = generate_sound(resized_gray_image)
-    #np.savetxt("sound.csv", sound, delimiter=",")
-    
-    #encodedSound = base64.b64encode(sound)
 
     #Plot signal
     """plt.plot(sound)
@@ -188,32 +165,10 @@ def decodeVisualisation(path_image) :
     plt.ylim([50, 1200])
     plt.show()"""
     
-    return sound
+    return sound, 22050    
 
-    #write('line_modulated.wav', 22050, sound)
-    
-    #return encodedSound
-    
-def saveSound(sound,name):
-    name = name.rsplit('/', 1)[-1]
-    #MP3 less good quality but take less place compared to WAV
-    path = 'websitesSounds/'+name+'.wav'
-    write(path, 22050, sound)
-    
-    return path
-    
-def deleteSound(path):
 
-    print(path)
-    if os.path.exists(path):
-        os.remove(path)
-        return True
-    else:
-        print("The file does not exist") 
-    
-    return False
-
-url = "images/line.png"
+"""url = "images/line.png"
 sound = decodeVisualisation(url)
 path = saveSound(sound, url)
-deleteSound(path)
+#deleteSound(path)"""
