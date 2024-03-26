@@ -11,6 +11,7 @@ from detectron2.data import MetadataCatalog
 import urllib
 import librosa
 from utils import isUrl
+import env
 
 def segmentationDetection(path_image): 
         
@@ -25,6 +26,7 @@ def segmentationDetection(path_image):
 
     # Create config
     cfg = get_cfg()
+    cfg.MODEL.DEVICE = env.device
     cfg.merge_from_file(model_zoo.get_config_file("COCO-PanopticSegmentation/panoptic_fpn_R_101_3x.yaml"))
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-PanopticSegmentation/panoptic_fpn_R_101_3x.yaml")
