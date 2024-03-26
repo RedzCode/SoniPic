@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SoniPic</title>
     <link rel="stylesheet" href="popup.css" />
+    <script src="../utils/FileSaver.js"></script>
     <script src="popup.js"></script>
     <script src="tabs.js" defer></script>
     <!-- TODO : defer-->
@@ -12,34 +13,44 @@
 
   <body>
     <h1>SoniPic</h1>
-    <div class="ct">
+    <p id="loading-text" class="hidden" style="color: red;">
+      Il n'y a pas d'images !
+    </p>
+    <div id="ct-slider" class="ct hidden">
       <button
         class="arrow-slider" id="sd-left"
         style="background-color: white; margin: 0"
       >
         <img
-          src="../images/arrow-left-fill.png"
+          src="../icons/arrow-left-fill.png"
           alt="arrow left slider images"
         />
       </button>
       <div class="slider" id="slider">
-        <!-- button for accessibility access with tab-->
+        <!-- buttons for accessibility access with tab-->
       </div>
+
       <button
         class="arrow-slider" id ="sd-right"
         style="background-color: white; margin: 0"
       >
         <img
-          src="../images/arrow-right-fill.png"
+          src="../icons/arrow-right-fill.png"
           alt="arrow right slider images"
         />
       </button>
     </div>
-    <div id="container">
-      <button>Visualiser</button>
-      <button>Entendre</button>
-      <button>Enregistrer</button>
-      <button>Partager</button>
+    <div id="options" class="container" style="visibility: hidden;">
+      <button id="visualize">Visualiser</button>
+      <button id="listen">Entendre</button>
+      <button id="goTo">Voir</button>
+    </div>
+    <div id="ct-audio" class="ct hidden">
+      <audio id="audioPlayer" controls>
+      </audio>
+      <button id="save">
+        <img src="../icons/icon_download.png" alt="Download icon" width="30px" height="30px">
+      </button>
     </div>
   </body>
 </html>
