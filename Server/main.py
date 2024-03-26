@@ -5,6 +5,7 @@ from imgToSound import decodeVisualisation
 from imgToSegmentation import decodeRegion
 from utils import saveSound, deleteSound, isPresent
 import pathlib
+import env
 
 from flask_cors import CORS, cross_origin
 
@@ -14,7 +15,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route("/post-sound/", methods=['POST'])
 def post_sound():
-   
+
     # Extract the JSON data from the request body
     data = request.json
         
@@ -49,8 +50,8 @@ def post_sound():
 @app.route("/get-sound/<string:name>", methods=['GET'])
 @cross_origin()
 def get_sound(name):
+    racine = env.racine
     name = re.sub(r'[^\x00-\x7F]', '', name)
-    racine = os.path.abspath(os.getcwd())
     path = pathlib.PureWindowsPath(racine+"\\generatedSounds\\"+name)
     return send_file(path.as_posix())
 

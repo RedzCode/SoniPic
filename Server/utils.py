@@ -1,15 +1,17 @@
 import re
 import soundfile as sf
 import os
+import env
 
 def saveSound(sound,name,sr, prefix):
     name = re.sub(r'[^\x00-\x7F]', '', name.rsplit('/', 1)[-1])
     path = str(prefix+"_"+name+'.wav')
-    sf.write("generatedSounds/"+path, sound, sr)
+    racine = env.racine
+    sf.write(racine+"/generatedSounds/"+path, sound, sr)
     return path
     
 def deleteSound(filename):
-    racine = os.path.abspath(os.getcwd())
+    racine = env.racine
     path = racine+'/generatedSounds/'+filename
     if os.path.exists(path):
         os.remove("generatedSounds/"+path)
@@ -19,8 +21,11 @@ def deleteSound(filename):
     return False
 
 def isPresent(filename):
-    racine = os.path.abspath(os.getcwd())
+    racine = env.racine
     path = racine+'/generatedSounds/'+filename
+    print("pressseeent ===========")
+    print(path)
+    print(os.path.exists(path))
     return os.path.exists(path)
 
 """
