@@ -1,10 +1,11 @@
 import re
+from urllib.parse import quote
 import soundfile as sf
 import os
 import env
 
 def saveSound(sound,name,sr, prefix):
-    name = re.sub(r'[^\x00-\x7F]', '', name.rsplit('/', 1)[-1])
+    print("before save " +name)
     path = str(prefix+"_"+name+'.wav')
     racine = env.racine
     sf.write(racine+"/generatedSounds/"+path, sound, sr)
@@ -39,3 +40,9 @@ def isUrl(arg):
     if re.match(url_pattern, arg):
         return True
     return False
+
+"""
+Return IRI (URL with not %-encoded character) to URL
+"""
+def iriToUrl(iri):
+    return quote(iri, safe=':/')

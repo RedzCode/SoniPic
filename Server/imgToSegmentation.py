@@ -12,6 +12,8 @@ import urllib
 import librosa
 from utils import isUrl
 import env
+import random
+from utils import saveSound, deleteSound, isPresent
 
 def segmentationDetection(path_image): 
         
@@ -73,7 +75,7 @@ def segmentationDetection(path_image):
     
 def labelsToSound(labels): 
     
-    labels = list(dict.fromkeys(labels))
+    uniqueLabels = list(dict.fromkeys(labels))
     
     size = 220000
     sound = np.zeros(size,)
@@ -82,32 +84,57 @@ def labelsToSound(labels):
     racine = env.racine
 
     # Loop over all the labels
-    for label in labels : 
+    for label in uniqueLabels : 
+        nb = labels.count(label)
+        percent = int((nb * 6) / len(labels)) 
+        
         if label == "person":
-            person, sr = librosa.load(racine+'/sounds/person_10sec.mp3')
-            person = person[0:size]
-            sound += person
-            print("add person")
+            pas1, sr = librosa.load(racine+'/sounds/pas1.mp3')
+            pas2, sr = librosa.load(racine+'/sounds/pas2.mp3')
+            max = 1
+            if nb >= 3 :
+                 discus, sr = librosa.load(racine+'/sounds/foules.mp3')
+                 max = 2
+            for i in range(percent):
+                rd = random.randint(0, max)
+                if rd == 0:
+                    print("add pas")
+                    sound += handleMix(pas1, size)
+                elif rd == 1:
+                    print("add pas")
+                    sound += handleMix(pas2, size)
+                elif rd == 2: 
+                    print("add blabla")
+                    sound += handleMix(discus, size)
+                    
         elif label == "car":
-            car, sr = librosa.load(racine+'/sounds/car_10sec.mp3')
-            car = car[0:size]
-            sound += car
-            print("add car")
+            car, sr = librosa.load(racine+'/sounds/car.mp3')
+            for i in range(percent):
+                sound += handleMix(car, size)
         elif label == "bicycle":
-            print("bicy")
-        elif label == "sea":
-            print("sea")
+            bicy, sr = librosa.load(racine+'/sounds/velo.mp3')
+            sound += handleMix(bicy, size)
         elif label == "tree":
-            print("tree")
+            forest, sr = librosa.load(racine+'/sounds/forest.mp3')
+            sound += handleMix(forest, size)
         elif label == "sea":
-            print("sea")
+            sea, sr = librosa.load(racine+'/sounds/sea.mp3')
+            sound += handleMix(sea, size)
         elif label == "horse":
-            print("horse")
+            horse, sr = librosa.load(racine+'/sounds/cheval.mp3')
+            sound += handleMix(horse, size)
            
     if not np.any(sound) :
         sound, sr = librosa.load(racine+'/sounds/no_instances.mp3')
     
     return sound, sr
+
+def handleMix(file, size):
+    start = random.randint(0, len(file)-(size+1))
+    subSound = file[start:start+size]
+    
+    return subSound
+
 
 def decodeRegion(path_image):
 
@@ -117,4 +144,5 @@ def decodeRegion(path_image):
     return sound, sr
     
 
-#decodeRegion("images/220px-Cycling_Amsterdan_04.jpg")
+"""sound, sr = decodeRegion("images/beachHorse.jpg")
+saveSound(sound, "test.mp3",sr, "ln")"""

@@ -1,9 +1,8 @@
-import os
 import re
 from flask import Flask, Response, request, jsonify, send_file
 from imgToSound import decodeVisualisation
 from imgToSegmentation import decodeRegion
-from utils import saveSound, deleteSound, isPresent
+from utils import saveSound, deleteSound, isPresent, iriToUrl
 import pathlib
 import env
 
@@ -22,21 +21,23 @@ def post_sound():
     if data:
         url = data.get('url')
         print("urlllll =========== " +url)
+        url_encoded = iriToUrl(url)
+        print("url_encoded =========== " +url_encoded)
         
-        url_modified = re.sub(r'[^\x00-\x7F]', '', url.rsplit('/', 1)[-1])
+        filename = re.sub(r'[^\x00-\x7F]', '', url.rsplit('/', 1)[-1])
         
         # Visualisation
-        pathVisu = str("visu"+"_"+url_modified+'.wav')
+        pathVisu = str("visu"+"_"+filename+'.wav')
         if not isPresent(pathVisu) :
             # Visualisation   
-            soundVisu,sr = decodeVisualisation(url)
-            saveSound(soundVisu, url,sr, "visu")
+            soundVisu,sr = decodeVisualisation(url_encoded)
+            saveSound(soundVisu, filename,sr, "visu")
             
         # Listen
-        pathListen = str("ln"+"_"+url_modified+'.wav')
+        pathListen = str("ln"+"_"+filename+'.wav')
         if not isPresent(pathListen) :
-            soundListen, sr = decodeRegion(url)
-            saveSound(soundListen,url, sr, "ln" )
+            soundListen, sr = decodeRegion(url_encoded)
+            saveSound(soundListen,filename, sr, "ln" )
                 
         data = {
             "pathVisu": str(pathVisu),
@@ -51,7 +52,6 @@ def post_sound():
 @cross_origin()
 def get_sound(name):
     racine = env.racine
-    name = re.sub(r'[^\x00-\x7F]', '', name)
     path = pathlib.PureWindowsPath(racine+"\\generatedSounds\\"+name)
     return send_file(path.as_posix())
 
