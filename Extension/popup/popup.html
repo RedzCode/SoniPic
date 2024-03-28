@@ -8,7 +8,6 @@
     <script src="../utils/FileSaver.js"></script>
     <script src="popup.js"></script>
     <script src="tabs.js" defer></script>
-    <!-- TODO : defer-->
   </head>
 
   <body>
@@ -41,9 +40,9 @@
       </button>
     </div>
     <div id="options" class="container" style="visibility: hidden;">
-      <button id="visualize">Visualiser</button>
-      <button id="listen">Entendre</button>
-      <button id="goTo">Voir</button>
+      <button class="btn-options" id="visualize">Visualiser</button>
+      <button class="btn-options" id="listen">Entendre</button>
+      <button class="btn-options" id="show">Voir</button>
     </div>
     <div id="ct-audio" class="ct hidden">
       <audio id="audioPlayer" controls>

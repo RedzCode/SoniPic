@@ -9,7 +9,13 @@ body{
   justify-content: space-evenly;
 }
 
-.container > button {
+.btn-options{
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(-45deg, #eeeeee, #ffbebf);
+}
+
+.btn-options:hover{
   width: 80px;
   height: 80px;
   background: linear-gradient(-45deg, #E34246, #de787a);
@@ -64,3 +70,4 @@ body{
   color: white;
   margin: 0 2px; /* Adjust as needed */
 }
+

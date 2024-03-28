@@ -1,6 +1,8 @@
 var currentBlob = ""
 var pathVisualisation = ""
 var pathListen = ""
+var currUrl = ""
+var stateModal = "close"
 
 /**
  * Start when the DOM load
@@ -27,9 +29,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const btnPlayVisualize = document.getElementById("visualize");
   const btnPlayListen = document.getElementById('listen');
   const btnSave = document.getElementById('save');
+  const btnShow = document.getElementById('show');
   btnPlayVisualize.onclick = function() { playAudio(pathVisualisation) };
   btnPlayListen.onclick = function() { playAudio(pathListen) };
   btnSave.onclick = function() { saveAudio() };
+  btnShow.onclick = function() { handleModal() };
 
 });
 
@@ -47,10 +51,6 @@ function addElementsSlider(nbElements) {
     button.appendChild(indexButton);
 
     button.classList.add("item")
-
-    if(index == 0){
-      button.classList.add("active")
-    }
 
     button.setAttribute('data-idBtt' , index);      
 
@@ -74,8 +74,8 @@ function processUrl(indexImage) {
     },
     async function (message) {
       //Get the answer of the background
-      url =  message.url.replace(/'[^\x00-\x7F]'/gi, '');
-      paths = await postImage(url)         
+      currUrl =  message.url.replace(/'[^\x00-\x7F]'/gi, '');
+      paths = await postImage(currUrl)         
       pathVisualisation = paths.pathVisu
       pathListen = paths.pathListen
       
@@ -91,6 +91,10 @@ function handleActiveButton(button){
   currentBlob = ""
   pathVisualisation = ""
   pathListen = ""
+  currUrl =""
+
+  if(stateModal == "open")
+    handleModal()
 
   const optionsAudio = document.getElementById("ct-audio")
   if(!optionsAudio.classList.contains("hidden")){
@@ -98,7 +102,8 @@ function handleActiveButton(button){
   }
 
   activeButton = document.getElementsByClassName("active")[0]
-  activeButton.classList.remove("active")
+  if(activeButton != undefined )
+    activeButton.classList.remove("active")
 
   button.classList.add("active")
 
@@ -179,4 +184,20 @@ function saveAudio(name){
   if(currentBlob != ""){
     saveAs(currentBlob, name+'.wav');
   }
+}
+
+function handleModal(){
+  var actionModal = "hideImage"
+  if(stateModal == "close"){
+    actionModal = "showImage"
+  }
+
+  chrome.tabs.query({ active: true, currentWindow: true}, function(activeTabs) {
+    chrome.tabs.sendMessage(activeTabs[0].id, { action: actionModal,
+    "url":currUrl }, 
+    function (response) {
+      if(response != undefined)
+        stateModal = response.state
+    });
+  });
 }
