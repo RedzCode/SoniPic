@@ -12,6 +12,7 @@
     <title>SoniPic</title>
     <script src="script/nav.js"></script>
     <script src="script/index.js"></script>
+    <script src="script/sonification.js"></script>
     <meta name="google-site-verification" content="I6Sqak3kcTAA-81TDO3meleCzlI_hM2SS-pjlAZh4bk" />
   </head>
   <body>
@@ -33,19 +34,20 @@
     </nav>
     <div class="main">
       <h1>Sonifiez vos images !</h1>
-      <label for="picture">Choisir une image à sonifier:</label>
-      <input type="file" id="picture" name="picture" onchange="displayPicture(event)" accept="image/png, image/jpeg" />
+      <label for="picture-input">Choisir une image à sonifier:</label>
+      <input type="file" id="picture-input" name="picture" onchange="displayPicture(event)" accept="image/png, image/jpeg" />
       <div class="pictureframe">
         <img id="uploaded" src="" alt="Image sélectionnée" width="300px" height="300px">
       </div>
+      <button id="btn-sonify" onclick="sonifyImage()">Sonifier</button>
       <div class="soundframe container">
         <div>
-          <h3>Visualisation</h3>
+          <h3>Abstrait</h3>
           <audio id="audio-visu" controls>
           </audio>
         </div>
         <div> 
-          <h3>Entendre</h3>      
+          <h3>Concret</h3>      
           <audio id="audio-listen" controls>
           </audio>
         </div>
