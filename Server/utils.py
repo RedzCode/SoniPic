@@ -45,4 +45,6 @@ def isUrl(arg):
 Return IRI (URL with not %-encoded character) to URL
 """
 def iriToUrl(iri):
+    if iri.find("%") != -1 :
+        return iri
     return quote(iri, safe=':/')
