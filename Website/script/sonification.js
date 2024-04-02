@@ -4,16 +4,7 @@ async function sonifyImage(){
     var formData = new FormData();
     // Append the file to FormData
     formData.append('image', blobImg);
-/*     var reader = new FileReader
-    reader.readAsDataURL(blobImg)
-    var data = reader.result;
-    data = data.split(",").pop(); */
     paths = await postImage(formData)
-}
-
-async function loadAudios(){
-    img = document.getElementById("uploaded")
-    await postImage(img)
 }
 
 async function postImage(data){
@@ -23,14 +14,13 @@ return fetch("http://127.0.0.1:5000/post-sound/", {
     body: data,
     })
     .then((response) => response.json())
-    .then(async (json) => {    
-        paths = json.path
+    .then((json) => json).then(async (paths) => {
+        console.log(paths);
         pathVisualisation = paths.pathVisu
         pathListen = paths.pathListen
         await getSound(pathVisualisation, "audio-visu")
         await getSound(pathListen, "audio-listen")
-    }
-);
+    });
     
 }
 
