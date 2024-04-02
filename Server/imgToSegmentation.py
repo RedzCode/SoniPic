@@ -10,19 +10,22 @@ from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
 import urllib
 import librosa
-from utils import isUrl
+from utils import isUrl, isPath
 import env
 import random
 from utils import saveSound, deleteSound, isPresent
 
-def segmentationDetection(path_image): 
+def segmentationDetection(image_data): 
         
-    if isUrl(path_image): 
-         req = urllib.request.urlopen(path_image)
+    if isUrl(image_data): 
+         req = urllib.request.urlopen(image_data)
          arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
          image = cv.imdecode(arr, 1)
+    elif isPath(image_data) :
+        image = cv.imread(image_data)
     else : 
-        image = cv.imread(path_image)
+        arr = np.asarray(bytearray(image_data), dtype=np.uint8)
+        image = cv.imdecode(arr,1)
 
     setup_logger()
 

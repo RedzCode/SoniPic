@@ -4,54 +4,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import urllib
 from scipy.signal import lfilter
-from utils import isUrl
+from utils import isUrl, isPath
 
 """
 Transforms pixel value into an amplitude between [0,1]
 """
 def intensity_to_amplitude(value):
     return value / 255.0 
-
-def modulator(modulator, duration):
-    
-    # Parameters
-    fs = 22050
-    f_carrier = 635  # Carrier frequency in Hz (A4 note)
-
-    # Time array
-    t = np.arange(0, duration, 1/fs)
-
-    # Carrier and Modulator signals
-    carrier = np.sin(2 * np.pi * f_carrier * t)  # Carrier signal
-
-    # Amplitude Modulated signal
-    am_signal = carrier * modulator
-    
-    # Plotting
-    plt.figure(figsize=(10, 8))
-
-    # Carrier Signal
-    plt.subplot(3, 1, 1)
-    plt.plot(t, carrier)
-    plt.title('Carrier Signal')
-
-    # Modulator Signal
-    plt.subplot(3, 1, 2)
-    plt.plot(t, modulator)
-    plt.title('Modulator Signal')
-    
-    # AM Signal
-    plt.subplot(3, 1, 3)
-    plt.plot(t, am_signal)
-    plt.title('AM Signal')
-
-    plt.tight_layout()
-    plt.show()
-
-    # Saving the AM signal as a WAV file
-    am_signal_normalized = np.int16((am_signal / am_signal.max()) * 32767)  # Normalize the signal
-    
-    return am_signal_normalized
 
 """
 Generate a signal from an image in grayscale
@@ -124,17 +83,20 @@ Decode an image into a sound from left to right
 Parameter : path_image = URL or file path
 Return : the signal array
 """
-def decodeVisualisation(path_image) :
+def decodeVisualisation(image_data) :
     
     print("==================================")
-    print(path_image)
+    print(image_data)
     
-    if isUrl(path_image): 
-         req = urllib.request.urlopen(path_image)
+    if isUrl(image_data): 
+         req = urllib.request.urlopen(image_data)
          arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
          gray_image = cv.imdecode(arr, 0)
+    elif isPath(image_data) :
+         gray_image = cv.imread(image_data,0) # GrayScale
     else : 
-        gray_image = cv.imread(path_image,0) # GrayScale
+        arr = np.asarray(bytearray(image_data), dtype=np.uint8)
+        gray_image = cv.imdecode(arr,0)
         
     print("Gray image dim = ", gray_image.shape)
     

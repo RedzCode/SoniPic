@@ -33,14 +33,20 @@ def isPresent(filename):
 Check if an argument is an URL
 """
 def isUrl(arg):
-    # Regular expression to match typical URL formats
-    url_pattern = re.compile(r'^(?:http|ftp)s?://\S+$', re.IGNORECASE)
+    if isinstance(arg, str) :
+        # Regular expression to match typical URL formats
+        url_pattern = re.compile(r'^(?:http|ftp)s?://\S+$', re.IGNORECASE)
 
-    # Check if the argument matches the URL pattern
-    if re.match(url_pattern, arg):
-        return True
+        # Check if the argument matches the URL pattern
+        if re.match(url_pattern, arg):
+            return True
     return False
 
+"""
+Check if an argument is a path
+"""
+def isPath(arg):
+     return isinstance(arg, str)
 """
 Return IRI (URL with not %-encoded character) to URL
 """
