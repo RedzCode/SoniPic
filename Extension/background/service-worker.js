@@ -42,6 +42,7 @@ function grabImages() {
     console.log("Could not retrieve images from this page");
     return;
   }
+  frames = frames.filter(url => !(url.includes("svg") || url.includes("png")));
   return frames;
 }
 
