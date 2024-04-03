@@ -18,10 +18,10 @@
   },
   "content_scripts": [
     { "matches": ["<all_urls>"], 
-      "css": [ "content_scripts/modal.css" ], 
-      "js": ["content_scripts/content-script.js"] 
+      "css": [ "page/modal.css" ], 
+      "js": ["page/content.js"] 
     }
   ],
   "permissions": ["scripting", "activeTab", "tabs"],
-  "host_permissions": ["http://*/*", "https://*/*"]
+  "host_permissions": ["*://fr.wikipedia.org/*", "*://sonipic.netlify.app/*","://upload.wikimedia.org/*"]
 }
