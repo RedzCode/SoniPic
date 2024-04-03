@@ -83,8 +83,11 @@ def post_sound():
 @app.route("/get-sound/<string:name>", methods=['GET'])
 @cross_origin()
 def get_sound(name):
+    name_encoded = iriToUrl(name)
     racine = env.racine
-    path = pathlib.PureWindowsPath(racine+"\\generatedSounds\\"+name)
+    print("name enconded = ===")
+    print(name_encoded)
+    path = pathlib.PureWindowsPath(racine+"\\generatedSounds\\"+name_encoded)
     return send_file(path.as_posix())
 
 @app.route("/delete-sound/<string:path>", methods=['DELETE'])

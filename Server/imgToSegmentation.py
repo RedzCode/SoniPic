@@ -169,5 +169,5 @@ def decodeRegion(path_image):
     return sound, sr
     
 
-sound, sr = decodeRegion("../Data/images/amsterdam.jpg")
-saveSound(sound, "test.mp3",sr, "ln")
+"""sound, sr = decodeRegion("../Data/images/amsterdam.jpg")
+saveSound(sound, "test.mp3",sr, "ln")"""
