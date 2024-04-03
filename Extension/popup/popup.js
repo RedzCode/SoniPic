@@ -8,6 +8,9 @@ var stateModal = "close"
  * Start when the DOM load
  */
 document.addEventListener("DOMContentLoaded", function () {
+  var query = { active: true, currentWindow: true };
+  chrome.tabs.query(query, checkPermissions);
+
   // Get the number of images from the background script
   chrome.runtime.sendMessage(
     {
@@ -36,6 +39,27 @@ document.addEventListener("DOMContentLoaded", function () {
   btnShow.onclick = function() { handleModal() };
 
 });
+
+/**
+ *  Check if the extension is allowed on the opened tab
+ *  Do not work with every navigator version 
+ * @param {*} tabs list of navigator tabs
+ */
+function checkPermissions(tabs) {
+  var currentTab = tabs[0];
+  console.log(currentTab);
+  chrome.permissions.contains({
+    origins: [currentTab.url]
+  }, function(result) {
+    console.log(result);
+    if (result) {
+      console.log("permission");
+    } else {
+      console.log("no permission");
+    }
+  });
+  
+}
 
 /**
  * Create as much buttons as the number of elements
