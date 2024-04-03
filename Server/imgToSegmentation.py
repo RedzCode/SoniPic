@@ -10,10 +10,11 @@ from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
 import urllib
 import librosa
-from utils import isUrl, isPath
+from utils import isUrl, isPath, saveSound
 import env
 import random
-from utils import saveSound, deleteSound, isPresent
+from collections import Counter
+from math import *
 
 def segmentationDetection(image_data): 
         
@@ -39,7 +40,6 @@ def segmentationDetection(image_data):
 
     # Perform inference
     predictions, segmentInfo = predictor(image)["panoptic_seg"]
-    
 
     # Visualize predictions
     metadata= MetadataCatalog.get(cfg.DATASETS.TRAIN[0])
@@ -66,9 +66,9 @@ def segmentationDetection(image_data):
                 segment_id_to_label.append(stuff_classes[segment["category_id"]])
 
     # Print segment IDs and corresponding 
-    print(segmentInfo)
+    """print(segmentInfo)
     for i in range(len(segment_id_to_label)):
-          print(f"Label: {segment_id_to_label[i]}")
+          print(f"Label: {segment_id_to_label[i]}")"""
     
     # Show image and labels
     """cv.imshow("result", out.get_image()[:, :, ::-1])
@@ -77,8 +77,9 @@ def segmentationDetection(image_data):
     return segment_id_to_label
     
 def labelsToSound(labels): 
-    
+
     uniqueLabels = list(dict.fromkeys(labels))
+    dictLabels = processLabels(labels)
     
     size = 220000
     sound = np.zeros(size,)
@@ -88,36 +89,38 @@ def labelsToSound(labels):
 
     # Loop over all the labels
     for label in uniqueLabels : 
-        nb = labels.count(label)
-        percent = int((nb * 6) / len(labels)) 
+        occurrences = dictLabels[label]
         
         if label == "person":
             pas1, sr = librosa.load(racine+'/sounds/pas1.mp3')
             pas2, sr = librosa.load(racine+'/sounds/pas2.mp3')
             max = 1
-            if nb >= 3 :
+            if occurrences >= 3 :
                  discus, sr = librosa.load(racine+'/sounds/foules.mp3')
                  max = 2
-            for i in range(percent):
+            for i in range(occurrences):
                 rd = random.randint(0, max)
                 if rd == 0:
-                    print("add pas")
                     sound += handleMix(pas1, size)
                 elif rd == 1:
-                    print("add pas")
                     sound += handleMix(pas2, size)
                 elif rd == 2: 
-                    print("add blabla")
                     sound += handleMix(discus, size)
                     
         elif label == "car":
-            car, sr = librosa.load(racine+'/sounds/car.mp3')
-            for i in range(percent):
+            nb = labels.count(label)
+            if nb > 10:
+                car, sr = librosa.load(racine+'/sounds/periph.mp3')
                 sound += handleMix(car, size)
+            else :
+                car, sr = librosa.load(racine+'/sounds/car.mp3')
+                for i in range(occurrences):
+                    sound += handleMix(car, size)
         elif label == "bicycle":
             bicy, sr = librosa.load(racine+'/sounds/velo.mp3')
-            sound += handleMix(bicy, size)
-        elif label == "tree":
+            for i in range(occurrences):
+                sound += handleMix(bicy, size)
+        elif label == "tree" or label == "bird":
             forest, sr = librosa.load(racine+'/sounds/forest.mp3')
             sound += handleMix(forest, size)
         elif label == "sea":
@@ -125,12 +128,31 @@ def labelsToSound(labels):
             sound += handleMix(sea, size)
         elif label == "horse":
             horse, sr = librosa.load(racine+'/sounds/cheval.mp3')
-            sound += handleMix(horse, size)
+            for i in range(occurrences):
+                sound += handleMix(horse, size)
            
     if not np.any(sound) :
         sound, sr = librosa.load(racine+'/sounds/no_instances.mp3')
     
     return sound, sr
+
+def processLabels(labels):
+    dictLabels = Counter(labels)
+    limit = 4
+    maxOccurences = dictLabels['person']
+    if maxOccurences >  limit : 
+        maxLabel = list(dictLabels.keys())[0]
+        for label, value in dictLabels.items():
+            if label == maxLabel:
+                dictLabels[label] = limit 
+            elif value > limit:
+                dictLabels[label] = ceil(limit * limit / maxOccurences)
+            else : 
+                dictLabels[label] = ceil(value * limit / maxOccurences)
+    
+    print(dictLabels)
+    return dictLabels  
+    
 
 def handleMix(file, size):
     start = random.randint(0, len(file)-(size+1))
@@ -147,5 +169,5 @@ def decodeRegion(path_image):
     return sound, sr
     
 
-"""sound, sr = decodeRegion("images/beachHorse.jpg")
-saveSound(sound, "test.mp3",sr, "ln")"""
+sound, sr = decodeRegion("../Data/images/amsterdam.jpg")
+saveSound(sound, "test.mp3",sr, "ln")
