@@ -9,12 +9,11 @@ nav {
   justify-content: space-around;
   align-items: center;
   min-height: 8vh;
-  background-color: #832728; /*#78595e;*/
+  background-color: #832728;
   font-family: "Poppins", sans-serif;
 }
 
 .logo {
-  /*  color: #ffffff; */
   color: rgb(226, 226, 226);
   text-transform: uppercase;
   letter-spacing: 5px;

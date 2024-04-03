@@ -1,10 +1,15 @@
 
 async function sonifyImage(){
+
+
     blobImg = document.getElementById("picture-input").files[0];
-    var formData = new FormData();
-    // Append the file to FormData
-    formData.append('image', blobImg);
-    paths = await postImage(formData)
+    if(blobImg){
+        text = document.getElementById("waiting-sonify");
+        text.innerText = "En attente ..."
+        var formData = new FormData();
+        formData.append('image', blobImg);
+        paths = await postImage(formData)
+    }
 }
 
 async function postImage(data){
@@ -20,6 +25,9 @@ return fetch("http://127.0.0.1:5000/post-sound/", {
         pathListen = paths.pathListen
         await getSound(pathVisualisation, "audio-visu")
         await getSound(pathListen, "audio-listen")
+    }).then(() => {    
+        text = document.getElementById("waiting-sonify")
+        text.innerText = ""
     });
     
 }
