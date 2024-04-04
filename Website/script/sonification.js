@@ -1,3 +1,4 @@
+var server = "https://sonipic-maefortune.pythonanywhere.com/"
 
 /**
  * Get the uploaded image and get the paths 
@@ -19,7 +20,7 @@ async function sonifyImage(){
  * @param {*} data image uploaded
  */
 async function postImage(data){
-return fetch("http://127.0.0.1:5000/post-sound/", {
+return fetch(server+"post-sound/", {
     method: "POST",
     body: data,
     })
@@ -43,7 +44,7 @@ return fetch("http://127.0.0.1:5000/post-sound/", {
  * @param {*} idPlayer selected audio player
  */
 async function getSound(path, idPlayer){
-    fetch("http://127.0.0.1:5000/get-sound/"+path, {
+    fetch(server+"get-sound/"+path, {
     method: "GET",
     })
     .then((response) => response.blob())
