@@ -15,6 +15,7 @@
     <p id="loading-text" class="hidden" style="color: red;">
       Il n'y a pas d'images !
     </p>
+    <!-- Slider to select an image -->
     <div id="ct-slider" class="ct hidden">
       <button
         class="arrow-slider" id="sd-left"
@@ -39,14 +40,19 @@
         />
       </button>
     </div>
+
+    <!-- actions buttons on the image -->
     <div id="options" class="container" style="visibility: hidden;">
-      <button class="btn-options" id="visualize">Abstrait</button>
-      <button class="btn-options" id="listen">Concret</button>
+      <button class="btn-options" id="abstract">Abstrait</button>
+      <button class="btn-options" id="concrete">Concret</button>
       <button class="btn-options" id="show">Voir</button>
     </div>
+
+    <!-- Audio player -->
     <div id="ct-audio" class="ct hidden">
       <audio id="audioPlayer" controls>
       </audio>
+      <!--Save audio -->
       <button id="save">
         <img src="../icons/icon_download.png" alt="Download icon" width="30px" height="30px">
       </button>

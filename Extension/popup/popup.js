@@ -1,6 +1,6 @@
 var currentBlob = ""
-var pathVisualisation = ""
-var pathListen = ""
+var pathAbstract = ""
+var pathConcrete = ""
 var currUrl = ""
 var stateModal = "close"
 
@@ -21,7 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("loading-text").classList.remove("hidden");
       }else{
         document.getElementById("ct-slider").classList.remove("hidden");
-        console.log(response.nb);
         addElementsSlider(response.nb)
       }
 
@@ -29,12 +28,12 @@ document.addEventListener("DOMContentLoaded", function () {
   );  
 
   // Set up buttons
-  const btnPlayVisualize = document.getElementById("visualize");
-  const btnPlayListen = document.getElementById('listen');
+  const btnPlayVisualize = document.getElementById("abstract");
+  const btnPlayListen = document.getElementById('concrete');
   const btnSave = document.getElementById('save');
   const btnShow = document.getElementById('show');
-  btnPlayVisualize.onclick = function() { playAudio(pathVisualisation) };
-  btnPlayListen.onclick = function() { playAudio(pathListen) };
+  btnPlayVisualize.onclick = function() { playAudio(pathAbstract) };
+  btnPlayListen.onclick = function() { playAudio(pathConcrete) };
   btnSave.onclick = function() { saveAudio() };
   btnShow.onclick = function() { handleModal() };
 
@@ -47,11 +46,9 @@ document.addEventListener("DOMContentLoaded", function () {
  */
 function checkPermissions(tabs) {
   var currentTab = tabs[0];
-  console.log(currentTab);
   chrome.permissions.contains({
     origins: [currentTab.url]
   }, function(result) {
-    console.log(result);
     if (result) {
       console.log("permission");
     } else {
@@ -100,8 +97,8 @@ function processUrl(indexImage) {
       //Get the answer of the background
       currUrl =  message.url.replace(/'[^\x00-\x7F]'/gi, '');
       paths = await postImage(currUrl)         
-      pathVisualisation = paths.pathVisu
-      pathListen = paths.pathListen
+      pathAbstract = paths.pathAbstract
+      pathConcrete = paths.pathConcrete
       
     }
   );
@@ -113,8 +110,8 @@ function processUrl(indexImage) {
  */
 function handleActiveButton(button){
   currentBlob = ""
-  pathVisualisation = ""
-  pathListen = ""
+  pathAbstract = ""
+  c = ""
   currUrl =""
 
   if(stateModal == "open")
@@ -189,7 +186,6 @@ async function getSound(path){
 async function playAudio(path){
     currentBlob = ""
     await getSound(path);
-    console.log(path);
     const options = document.getElementById("ct-audio")
     if(options.classList.contains("hidden")){
       options.classList.remove("hidden");
@@ -210,6 +206,9 @@ function saveAudio(name){
   }
 }
 
+/**
+ * Send a request to the page script to display or close the image modal 
+ */
 function handleModal(){
   var actionModal = "hideImage"
   if(stateModal == "close"){

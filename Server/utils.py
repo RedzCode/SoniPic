@@ -4,13 +4,26 @@ import soundfile as sf
 import os
 import env
 
+
+"""
+Save a signal into an audio file in the sever
+Parameters : sound = signal as numpy array
+             name = filename
+             sr = sample rate
+             prefix = the mode of the signal
+Return the location of the file
+"""
 def saveSound(sound,name,sr, prefix):
-    print("before save " +name)
     path = str(prefix+"_"+name+'.wav')
     racine = env.racine
     sf.write(racine+"/generatedSounds/"+path, sound, sr)
     return path
     
+"""
+Delete an audio file in the sever
+Parameters : filename
+Return true if the file has been deleted
+"""
 def deleteSound(filename):
     racine = env.racine
     path = racine+'/generatedSounds/'+filename
@@ -21,12 +34,14 @@ def deleteSound(filename):
         print("The file does not exist") 
     return False
 
+"""
+Check if a file is present on the server
+Parameters : filename
+Return true if the file is present
+"""
 def isPresent(filename):
     racine = env.racine
     path = racine+'/generatedSounds/'+filename
-    print("pressseeent ===========")
-    print(path)
-    print(os.path.exists(path))
     return os.path.exists(path)
 
 """
@@ -47,8 +62,10 @@ Check if an argument is a path
 """
 def isPath(arg):
      return isinstance(arg, str)
+ 
 """
-Return IRI (URL with not %-encoded character) to URL
+Transform IRI (URL with not %-encoded character) to URL
+Return the correct URL
 """
 def iriToUrl(iri):
     if iri.find("%") != -1 :

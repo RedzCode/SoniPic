@@ -1,3 +1,6 @@
+/**
+ * Handle requests from the popup and send a response
+ */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if(request.action === 'showImage') {
     displayModal(request.url)
@@ -9,6 +12,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   }
 });
 
+/**
+ * Insert modal in the code source of the page
+ * Display the image on the page in a popup window (modal)
+ * @param {*} src url image 
+ */
 function displayModal(src){
 
   const divModal = document.createElement("div");
@@ -32,6 +40,10 @@ function displayModal(src){
   }
 }
 
+/**
+ * Close the opened modal
+ * @param {*} src url image
+ */
 function closeModal(src){
   
   modal = document.getElementById("img-modal");

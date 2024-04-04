@@ -2,16 +2,30 @@ const slider = document.querySelector('.slider');
 const prevButton = document.getElementById('sd-left');
 const nextButton = document.getElementById('sd-right');
 
+/**
+ * Handle next button slider
+ */
 nextButton.onclick = function () {
     var container = document.getElementById('slider');
     sideScroll(container,'right',25,43,10);
 };
 
+/**
+ * Handle previous button slider
+ */
 prevButton.onclick = function () {
     var container = document.getElementById('slider');
     sideScroll(container,'left',25,43,10);
 };
 
+/**
+ * Handle the slider scroll
+ * @param {*} element container of the slider
+ * @param {*} direction left or right
+ * @param {*} speed time of scroll
+ * @param {*} distance distance between buttons
+ * @param {*} step amount of scroll f
+ */
 function sideScroll(element,direction,speed,distance,step){
     scrollAmount = 0;
     var slideTimer = setInterval(function(){

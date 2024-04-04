@@ -47,7 +47,7 @@ function grabImages() {
 }
 
 /**
- * Handle requests from the popup
+ * Handle requests from the popup and send a response
  */
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.action === "getNbImages") {

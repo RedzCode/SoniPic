@@ -1,5 +1,4 @@
 import librosa
-import re
 from detectron2.utils.logger import setup_logger
 import numpy as np
 import cv2 as cv
@@ -10,27 +9,23 @@ from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
 import urllib
 import librosa
-from utils import isUrl, isPath, saveSound
+from utils import isUrl, isPath
 import env
 import random
 from collections import Counter
 from math import *
 
-def segmentationDetection(image_data): 
-        
-    if isUrl(image_data): 
-         req = urllib.request.urlopen(image_data)
-         arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
-         image = cv.imdecode(arr, 1)
-    elif isPath(image_data) :
-        image = cv.imread(image_data)
-    else : 
-        arr = np.asarray(bytearray(image_data), dtype=np.uint8)
-        image = cv.imdecode(arr,1)
+"""
+ Use MS COCO to apply the image segmentation on the image
+ and returns the predicted labels
+ Parameter : image
+ Return : List of labels
+"""
+def segmentationDetection(image): 
 
     setup_logger()
 
-    # Create config
+    # Create configurations
     cfg = get_cfg()
     cfg.MODEL.DEVICE = env.device
     cfg.merge_from_file(model_zoo.get_config_file("COCO-PanopticSegmentation/panoptic_fpn_R_101_3x.yaml"))
@@ -47,7 +42,7 @@ def segmentationDetection(image_data):
     
     out = viz.draw_panoptic_seg_predictions(predictions.to("cpu"),segmentInfo)
     
-    # Get class names (labels)
+    # Get class names of the two classes
     thing_classes = metadata.thing_classes
     stuff_classes = metadata.stuff_classes
 
@@ -56,6 +51,7 @@ def segmentationDetection(image_data):
     # get thing classes
     for segment in segmentInfo:
         if segment["category_id"] >= 0:
+            # select labels with prediction > 0.9
             if segment["isthing"] == True and segment["score"] > 0.9 :
                 segment_id_to_label.append(thing_classes[segment["category_id"]])
 
@@ -64,11 +60,6 @@ def segmentationDetection(image_data):
         if segment["category_id"] >= 0:
             if segment["isthing"] == False :
                 segment_id_to_label.append(stuff_classes[segment["category_id"]])
-
-    # Print segment IDs and corresponding 
-    """print(segmentInfo)
-    for i in range(len(segment_id_to_label)):
-          print(f"Label: {segment_id_to_label[i]}")"""
     
     # Show image and labels
     """cv.imshow("result", out.get_image()[:, :, ::-1])
@@ -76,6 +67,11 @@ def segmentationDetection(image_data):
     
     return segment_id_to_label
     
+"""
+Generate a sound depending on the labels in input
+Parameter : labels = list of predicted labels
+Return : a signal as a numpy array
+"""
 def labelsToSound(labels): 
 
     uniqueLabels = list(dict.fromkeys(labels))
@@ -106,7 +102,6 @@ def labelsToSound(labels):
                     sound += handleMix(pas2, size)
                 elif rd == 2: 
                     sound += handleMix(discus, size)
-                    
         elif label == "car":
             nb = labels.count(label)
             if nb > 10:
@@ -136,6 +131,11 @@ def labelsToSound(labels):
     
     return sound, sr
 
+"""
+Apply a limit of occurrences of a label, apply proportion to all the labels
+Parameter : labels = list of labels
+Return : a dictionnary of labels with their proportioned occurrences
+"""
 def processLabels(labels):
     dictLabels = Counter(labels)
     limit = 4
@@ -150,10 +150,14 @@ def processLabels(labels):
             else : 
                 dictLabels[label] = ceil(value * limit / maxOccurences)
     
-    print(dictLabels)
     return dictLabels  
     
-
+"""
+Select randomly n seconds of the audio file
+Parameter : file = audio file
+            size = duration of the final audio
+Return : a sub sound as a numpy array
+"""
 def handleMix(file, size):
     start = random.randint(0, len(file)-(size+1))
     subSound = file[start:start+size]
@@ -161,9 +165,24 @@ def handleMix(file, size):
     return subSound
 
 
-def decodeRegion(path_image):
+"""
+Decode an image into a concrete sound representing the image
+Parameter : image_data = URL, file path or img data
+Return : the signal as numpy array
+"""
+def decodeConcrete(image_data):
 
-    labels = segmentationDetection(path_image)
+    if isUrl(image_data): 
+         req = urllib.request.urlopen(image_data)
+         arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
+         image = cv.imdecode(arr, 1)
+    elif isPath(image_data) :
+        image = cv.imread(image_data)
+    else : 
+        arr = np.asarray(bytearray(image_data), dtype=np.uint8)
+        image = cv.imdecode(arr,1)
+
+    labels = segmentationDetection(image)
     sound,sr = labelsToSound(labels)
     
     return sound, sr

@@ -1,4 +1,3 @@
-import re
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,26 +7,28 @@ from utils import isUrl, isPath
 
 """
 Transforms pixel value into an amplitude between [0,1]
+Parameter : value = pixel value between [0,255]
+Return : the normalized amplitude value
 """
 def intensity_to_amplitude(value):
     return value / 255.0 
 
 """
 Generate a signal from an image in grayscale
+Parameter : gray_image = image in grayscale
+Return : the generated sound as a numpy array
 """
 def generate_sound(gray_image):
     
-    print("(width, height) image = ",gray_image.shape)
-    width = gray_image.shape[1] #nb columns
     height = gray_image.shape[0] #nb rows
     
     # Define the range of frequencies
-    min_frequency = 70  # Minimum frequency in Hz #500 #100
-    max_frequency = 1200  # Maximum frequency in Hz #1200 #1000
-    
+    min_frequency = 70  # Minimum frequency in Hz
+    max_frequency = 1200  # Maximum frequency in Hz
+        
     #niquist :  sample_rate > 2 * maxFreq 
     # Sound parameters
-    sample_rate = 22050 # norme echantillonage
+    sample_rate = 22050 #norme
     timeByColumns = 0.025
     duration = int(gray_image.shape[1] * timeByColumns)     
 
@@ -70,23 +71,14 @@ def generate_sound(gray_image):
         # Addition signals
         sound += sinewave
 
-    # Return the sum of signals
-    # sound = sound[sound != 0]
-    #n = 12  # the larger n is, the smoother curve will be
-    #b = [1.0 / n] * n
-    #a = 1
-    #sound = lfilter(b, a, sound)
     return sound/np.max(sound) * 0.95
 
 """
-Decode an image into a sound from left to right
-Parameter : path_image = URL or file path
-Return : the signal array
+Decode an image into an abstract signal from left to right
+Parameter : image_data = URL, file path or img data
+Return : the signal numpy array
 """
-def decodeVisualisation(image_data) :
-    
-    print("==================================")
-    print(image_data)
+def decodeAbstract(image_data) :
     
     if isUrl(image_data): 
          req = urllib.request.urlopen(image_data)
@@ -97,8 +89,6 @@ def decodeVisualisation(image_data) :
     else : 
         arr = np.asarray(bytearray(image_data), dtype=np.uint8)
         gray_image = cv.imdecode(arr,0)
-        
-    print("Gray image dim = ", gray_image.shape)
     
     # resize image
     dim = (min(max(gray_image.shape[0], 40), 400), min(max(gray_image.shape[1],40), 400))
@@ -128,9 +118,3 @@ def decodeVisualisation(image_data) :
     plt.show()"""
     
     return sound, 22050    
-
-
-"""url = "images/line.png"
-sound = decodeVisualisation(url)
-path = saveSound(sound, url)
-#deleteSound(path)"""
