@@ -16,7 +16,7 @@ Return the location of the file
 def saveSound(sound,name,sr, prefix):
     path = str(prefix+"_"+name+'.wav')
     racine = env.racine
-    sf.write(racine+"/generatedSounds/"+path, sound, sr)
+    sf.write(racine+"generatedSounds/"+path, sound, sr)
     return path
     
 """

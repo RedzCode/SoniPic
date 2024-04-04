@@ -29,18 +29,18 @@ def post_sound():
         filename = "img-website"
         
         # Abstract mode
-        pathVisu = str("abs"+"_"+filename+'.wav')
-        soundVisu,sr = decodeAbstract(image_data)
-        saveSound(soundVisu, filename,sr, "abs")
+        pathAbstract = str("abs"+"_"+filename+'.wav')
+        soundAbstract,sr = decodeAbstract(image_data)
+        saveSound(soundAbstract, filename,sr, "abs")
             
         # Concrete mode
-        pathListen = str("cr"+"_"+filename+'.wav')
-        soundListen, sr = decodeConcrete(image_data)
-        saveSound(soundListen,filename, sr, "cr" )
+        pathConcrete = str("cr"+"_"+filename+'.wav')
+        soundConcrete, sr = decodeConcrete(image_data)
+        saveSound(soundConcrete,filename, sr, "cr" )
             
         dataToSend = {
-            "pathVisu": str(pathVisu),
-            "pathListen": str(pathListen)
+            "pathAbstract": str(pathAbstract),
+            "pathConcrete": str(pathConcrete)
         }
     elif request.json:
         # Extract the JSON data from the request body
@@ -52,21 +52,21 @@ def post_sound():
             filename = re.sub(r'[^\x00-\x7F]', '', url.rsplit('/', 1)[-1])
             
             # Astract
-            pathVisu = str("abs"+"_"+filename+'.wav')
-            if not isPresent(pathVisu) : 
-                soundVisu,sr = decodeAbstract(url_encoded)
-                saveSound(soundVisu, filename,sr, "abs")
+            pathAbstract = str("abs"+"_"+filename+'.wav')
+            if not isPresent(pathAbstract) : 
+                soundAbstract,sr = decodeAbstract(url_encoded)
+                saveSound(soundAbstract, filename,sr, "abs")
                 
             # Concrete
-            pathListen = str("cr"+"_"+filename+'.wav')
-            if not isPresent(pathListen) :
-                soundListen, sr = decodeConcrete(url_encoded)
-                saveSound(soundListen,filename, sr, "cr" )
+            pathConcrete = str("cr"+"_"+filename+'.wav')
+            if not isPresent(pathConcrete) :
+                soundConcrete, sr = decodeConcrete(url_encoded)
+                saveSound(soundConcrete,filename, sr, "cr" )
         
         # Return the files paths of the two generated audio files    
         dataToSend = {
-            "pathAbstract": str(pathVisu),
-            "pathConcrete": str(pathListen)
+            "pathAbstract": str(pathAbstract),
+            "pathConcrete": str(pathConcrete)
         }
                 
     if dataToSend != "" :
