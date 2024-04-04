@@ -3,6 +3,7 @@ var pathAbstract = ""
 var pathConcrete = ""
 var currUrl = ""
 var stateModal = "close"
+var server = "https://sonipic-maefortune.pythonanywhere.com/"
 
 /**
  * Start when the DOM load
@@ -111,8 +112,8 @@ function processUrl(indexImage) {
 function handleActiveButton(button){
   currentBlob = ""
   pathAbstract = ""
-  c = ""
-  currUrl =""
+  pathConcrete = ""
+  currUrl = ""
 
   if(stateModal == "open")
     handleModal()
@@ -145,7 +146,7 @@ function handleActiveButton(button){
  */
 async function postImage(url){
 
- return fetch("http://127.0.0.1:5000/post-sound/", {
+ return fetch(server+"post-sound/", {
     method: "POST",
     body: JSON.stringify({
       url: url
@@ -165,7 +166,7 @@ async function postImage(url){
  * @param {*} path name of the wav file
  */
 async function getSound(path){
-  fetch("http://127.0.0.1:5000/get-sound/"+path, {
+  fetch(server+"get-sound/"+path, {
     method: "GET",
   })
   .then((response) => response.blob())
