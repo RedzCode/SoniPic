@@ -26,10 +26,10 @@ return fetch(server+"post-sound/", {
     })
     .then((response) => response.json())
     .then((json) => json).then(async (paths) => {
-        pathVisualisation = paths.pathVisu
-        pathListen = paths.pathListen
-        await getSound(pathVisualisation, "audio-abs")
-        await getSound(pathListen, "audio-cr")
+        pathAbstract = paths.pathAbstract
+        pathConcrete = paths.pathConcrete
+        await getSound(pathAbstract, "audio-abs")
+        await getSound(pathConcrete, "audio-cr")
     }).then(() => {    
         text = document.getElementById("waiting-sonify")
         text.innerText = ""
