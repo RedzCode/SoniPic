@@ -186,7 +186,3 @@ def decodeConcrete(image_data):
     sound,sr = labelsToSound(labels)
     
     return sound, sr
-    
-
-"""sound, sr = decodeRegion("../Data/images/amsterdam.jpg")
-saveSound(sound, "test.mp3",sr, "ln")"""
