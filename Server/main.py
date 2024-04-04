@@ -90,7 +90,7 @@ def get_sound(name):
 """
 Delete an audio file 
 """   
-@app.route("/delete-sound/<string:path>", methods=['DELETE'])
+@app.route("/delete-sound/<string:name>", methods=['DELETE'])
 def delete_sound(name):
     return jsonify(deleteSound(name))
 

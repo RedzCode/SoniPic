@@ -28,7 +28,7 @@ def deleteSound(filename):
     racine = env.racine
     path = racine+'/generatedSounds/'+filename
     if os.path.exists(path):
-        os.remove("generatedSounds/"+path)
+        os.remove(path)
         return True
     else:
         print("The file does not exist") 
