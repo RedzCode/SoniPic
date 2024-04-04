@@ -23,5 +23,5 @@
     }
   ],
   "permissions": ["scripting", "activeTab", "tabs"],
-  "host_permissions": ["*://fr.wikipedia.org/*", "*://sonipic.netlify.app/*","://upload.wikimedia.org/*"]
+  "host_permissions": ["*://fr.wikipedia.org/*", "*://sonipic.netlify.app/*","*://upload.wikimedia.org/*"]
 }
