@@ -95,12 +95,12 @@ function processUrl(indexImage) {
       getURL: indexImage,
     },
     async function (message) {
+      //display loading text
+      loading = document.getElementById("loading");
+      loading.innerText = "En cours de chargement ..."
       //Get the answer of the background
       currUrl =  message.url.replace(/'[^\x00-\x7F]'/gi, '');
-      paths = await postImage(currUrl)         
-      pathAbstract = paths.pathAbstract
-      pathConcrete = paths.pathConcrete
-      
+      await postImage(currUrl)
     }
   );
 }
@@ -146,7 +146,7 @@ function handleActiveButton(button){
  */
 async function postImage(url){
 
- return fetch(server+"post-sound/", {
+ fetch(server+"post-sound/", {
     method: "POST",
     body: JSON.stringify({
       url: url
@@ -156,7 +156,13 @@ async function postImage(url){
     }
   })
   .then((response) => response.json())
-  .then((json) => json);
+  .then((json) => json)
+  .then((paths) => {
+    pathAbstract = paths.pathAbstract
+    pathConcrete = paths.pathConcrete
+    loading = document.getElementById("loading");
+    loading.innerText = "Les audios sont chargés !"
+});
   
 }
 
